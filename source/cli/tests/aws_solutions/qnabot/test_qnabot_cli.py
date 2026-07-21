@@ -12,5 +12,5 @@ from aws_solutions.qnabot.cli.qnabot_cli import (
 
 def test_cli():
     runner = CliRunner()
-    result = runner.invoke(cli)
+    result = runner.invoke(cli, ['--help'])
     assert result.exit_code == 0

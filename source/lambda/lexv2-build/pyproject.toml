@@ -12,7 +12,7 @@ urllib3 = "^2.7.0"
 
 [tool.poetry.group.dev.dependencies]
 moto = "^5.0.18"
-pytest = "^8.3.3"
+pytest = "^9.0.3"
 pytest-cov = "^6.0.0"
 mock = "^5.1.0"
 Jinja2 = "^3.1.6"

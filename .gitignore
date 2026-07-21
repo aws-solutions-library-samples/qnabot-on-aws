@@ -119,3 +119,6 @@ Pipfile.lock
 
 # kiro
 .kiro
+
+# local cdxgen config (developer-specific scan exclusions)
+.cdxgenrc

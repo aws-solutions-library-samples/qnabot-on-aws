@@ -122,7 +122,7 @@ async function get_keywords(params) {
     for (const word of params.question.split(' ')) {
         for (const contraction in contraction_list) {
             new_word = '';
-            if (word.toLowerCase() == contraction.toLowerCase() || word.toLowerCase() == contraction.toLowerCase().replace('\'', '’')) {
+            if (word.toLowerCase() == contraction.toLowerCase() || word.toLowerCase() == contraction.toLowerCase().replace(/'/g, '’')) {
                 new_word = contraction_list[contraction];
                 break;
             }

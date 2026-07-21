@@ -415,3 +415,34 @@ describe('when calling step function', () => {
     });
 
 });
+
+describe('getOsIndex', () => {
+    const { getOsIndex } = require('../index');
+    const OLD_ENV = process.env;
+
+    beforeEach(() => {
+        process.env = { ...OLD_ENV };
+        process.env.ES_INDEX = 'test-index';
+        process.env.ES_METRICSINDEX = 'test-metrics-index';
+        process.env.ES_FEEDBACKINDEX = 'test-feedback-index';
+    });
+
+    afterEach(() => {
+        process.env = OLD_ENV;
+    });
+
+    test('returns ES_METRICSINDEX for metrics export key', () => {
+        expect(getOsIndex('ExportAll_QnABot_20240101_120000_metrics.json')).toBe('test-metrics-index');
+        expect(getOsIndex('exports/ExportAll_QnABot_20240101_metrics.json')).toBe('test-metrics-index');
+    });
+
+    test('returns ES_FEEDBACKINDEX for feedback export key', () => {
+        expect(getOsIndex('ExportAll_QnABot_20240101_120000_feedback.json')).toBe('test-feedback-index');
+        expect(getOsIndex('exports/ExportAll_QnABot_20240101_feedback.json')).toBe('test-feedback-index');
+    });
+
+    test('returns default ES_INDEX for non-metrics non-feedback key', () => {
+        expect(getOsIndex('some_other_import_file.json')).toBe('test-index');
+        expect(getOsIndex('ExportAll_QnABot_partial.json')).toBe('test-index');
+    });
+});

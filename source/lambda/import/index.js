@@ -355,10 +355,12 @@ function stringifySessionAttributes(obj) {
 
 function getOsIndex(Key) {
     let esindex = process.env.ES_INDEX;
-    if (Key.match(/.*ExportAll_QnABot_.*_metrics\.json/)) { // NOSONAR - javascript:S5852 - input is user controlled and we have a limit on the number of characters
+    if (Key.match(/ExportAll_QnABot_[^/]*_metrics\.json$/)) {
         esindex = process.env.ES_METRICSINDEX;
-    } else if (Key.match(/.*ExportAll_QnABot_.*_feedback\.json/)) { // NOSONAR - javascript:S5852 - input is user controlled and we have a limit on the number of characters
+    } else if (Key.match(/ExportAll_QnABot_[^/]*_feedback\.json$/)) {
         esindex = process.env.ES_FEEDBACKINDEX;
     }
     return esindex;
 }
+
+exports.getOsIndex = getOsIndex;

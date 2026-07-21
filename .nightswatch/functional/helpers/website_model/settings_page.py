@@ -37,6 +37,7 @@ LLM_QA_SHOW_SOURCE_LINKS_ID = 'LLM_QA_SHOW_SOURCE_LINKS'
 
 PRE_PROCESSING_LAMBDA_ID = 'LAMBDA_PREPROCESS_HOOK'
 POST_PROCESSING_LAMBDA_ID = 'LAMBDA_POSTPROCESS_HOOK'
+FALLBACK_ORDER_ID = 'FALLBACK_ORDER'
 
 SAVE_XPATH = "//button[span='Save']"
 RESET_XPATH = "//button[span='Reset to defaults']"
@@ -271,6 +272,20 @@ class SettingsPage:
 
         disable_embeddings = self.operator.select_id(ENABLE_EMBEDDINGS_ID)
         self.__set_element_value(disable_embeddings, 'false')
+        return self.save_settings()
+
+    def set_fallback_order(self, order: str) -> str:
+        """
+        Sets the FALLBACK_ORDER setting and saves the changes.
+
+        Args:
+            order: The fallback order value (e.g. 'OPENSEARCH_FIRST', 'KNOWLEDGEBASE-FIRST').
+
+        Returns:
+            The status of the save operation.
+        """
+        fallback_order = self.operator.select_id(FALLBACK_ORDER_ID)
+        self.__set_element_value(fallback_order, order)
         return self.save_settings()
 
     def enable_llm(self) -> str:

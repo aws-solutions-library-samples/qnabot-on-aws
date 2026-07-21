@@ -11,6 +11,7 @@ const responsebots_lexv2 = require('./responsebots-lexv2.js').resources;
 const js = fs.readdirSync(`${__dirname}/js`)
     .filter((x) => !x.match(/(.*).(test|fixtures).js/)) // NOSONAR - javascript:S5852 - Cannot expose DOS attacks since this regex is only used during deployment
     .filter((x) => x.match(/(.*).js/)) // NOSONAR - javascript:S5852 - Cannot expose DOS attacks since this regex is only used during deployment
+    .sort((a, b) => a.localeCompare(b))
     .map((file) => {
         const name = file.match(/(.*).js/)[1]; // NOSONAR - javascript:S5852 - Cannot expose DOS attacks since this regex is only used during deployment
         return {
@@ -26,6 +27,7 @@ const py = fs.readdirSync(`${__dirname}/py`, { withFileTypes: true })
     .filter((x) => x.isFile())
     .map((x) => x.name)
     .filter((x) => x.match(/(.*).py/)) // NOSONAR - javascript:S5852 - Cannot expose DOS attacks since this regex is only used during deployment
+    .sort((a, b) => a.localeCompare(b))
     .map((file) => {
         const name = file.match(/(.*).py/)[1]; // NOSONAR - javascript:S5852 - Cannot expose DOS attacks since this regex is only used during deployment
         return {

@@ -8,6 +8,8 @@ const _ = require('lodash');
 const util = require('../../util');
 
 const js = fs.readdirSync(`${__dirname}/js_lambda_hooks`)
+    .filter((name) => !name.startsWith('.'))
+    .sort((a, b) => a.localeCompare(b))
     .map((name) => {
         if (fs.existsSync(`${__dirname}/js_lambda_hooks/${name}/${name}.js`)) {
             return {
@@ -20,9 +22,12 @@ const js = fs.readdirSync(`${__dirname}/js_lambda_hooks`)
                 id: `${name}JS`,
             };
         }
-    });
+    })
+    .filter(Boolean);
 
 const py = fs.readdirSync(`${__dirname}/py_lambda_hooks`)
+    .filter((name) => !name.startsWith('.'))
+    .sort((a, b) => a.localeCompare(b))
     .map((name) => ({
         name: `EXT${name}`,
         resource: pylambda(name),

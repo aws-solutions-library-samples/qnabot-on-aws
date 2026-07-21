@@ -11,9 +11,10 @@ import sanitizeHtml from 'sanitize-html';
 export function sanitize(data) {
     const sanitizeParams = {
         allowedTags: sanitizeHtml.defaults.allowedTags.concat(['question', 'references', 'chatHistory', 'followUpMessage', 'details', 'summary', 'img']),
-        allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, a: ['href'], p: ['style'], span: ['translate'] },
+        allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, a: ['href'], p: ['style'], span: ['translate', 'style'] },
         allowedStyles: {
             p: { 'white-space': [/^pre-line$/] },
+            span: { 'color': [/^#([0-9a-f]{3}|[0-9a-f]{6})$/i, /^rgb\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*\)$/] },
         },
         allowedSchemesByTag: {
             img: ['https', 'data'],

@@ -23,12 +23,15 @@ const py_example = fs.readdirSync(`${__dirname}/examples/py`, { withFileTypes: t
     });
 
 const js_ext = fs.readdirSync(`${__dirname}/extensions/js_lambda_hooks`)
+    .filter((name) => !name.startsWith('.'))
+    .filter((name) => fs.existsSync(`${__dirname}/extensions/js_lambda_hooks/${name}/${name}.js`))
     .map((name) => `EXT${name}`);
 
 const py_ext = fs.readdirSync(`${__dirname}/extensions/py_lambda_hooks`)
+    .filter((name) => !name.startsWith('.'))
     .map((name) => `EXT${name}`);
 
-exports.names = js_example.concat(py_example).concat(js_ext).concat(py_ext);
+exports.names = js_example.concat(py_example).concat(js_ext).concat(py_ext).sort((a, b) => a.localeCompare(b));
 
 const out = _.fromPairs(exports.names.map((x) => [x, { Value: { 'Fn::GetAtt': [x, 'Arn'] } }]));
 

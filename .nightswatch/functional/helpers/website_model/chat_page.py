@@ -11,7 +11,8 @@ TEXT_INPUT_NAME = 'text-input'
 MESSAGE_LIST_CSS = '.message-list'
 PAGE_READINESS_ELEMENT_XPATH = '//div[@class="message-text"]'
 MENU_XPATH = '//button[@aria-label="menu options"]'
-LAST_MESSAGE_XPATH = '(//div[@class="message-bubble focusable message-bubble-row-bot"])[last()]'
+LAST_MESSAGE_XPATH = '(//div[@class="v-row message message-bot"])[last()]'
+LAST_MESSAGE_TEXT_XPATH = '(//div[@class="v-row message message-bot"]//div[@class="message-text"])[last()]'
 
 SIGNIN_XPATH = '//form//button'
 
@@ -98,7 +99,7 @@ class ChatPage:
 
         :return: the text content in the last message element.
         """
-        return self.get_last_message_element().text
+        return self.operator.select_xpath(LAST_MESSAGE_TEXT_XPATH).text
 
     def has_element_with_xpath(self, xpath) -> str:
         """

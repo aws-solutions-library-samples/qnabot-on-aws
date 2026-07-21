@@ -494,6 +494,7 @@ ansi-html-community under the Apache-2.0 license
 ansi-regex under the MIT license
 ansi-styles under the MIT license
 any-promise under the MIT license
+anynum under the MIT license
 anymatch under the ISC license
 arch under the MIT license
 archiver-utils under the MIT license
@@ -971,6 +972,7 @@ is-typedarray under the MIT license
 is-weakmap under the MIT license
 is-weakset under the MIT license
 is-unicode-supported under the MIT license
+is-unsafe under the MIT license
 is-weakref under the MIT license
 is-whitespace under the MIT license
 is-wsl under the MIT license

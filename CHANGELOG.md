@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.4.1] - 2026-07-21
+
+### Security
+
+- Updated `@babel/core` to `7.29.6`.
+- Updated `js-yaml` to `3.15.0` and `4.3.0`.
+- Updated `fast-xml-parser` to `5.7.0`.
+- Updated `postcss` to `8.5.10`.
+- Updated `qs` to `6.15.2`.
+- Updated `@tootallnate/once` to `2.0.1`.
+- Updated `uuid` to `11.1.1`.
+- Updated `idna`, `requests`, and `pytest` Python dependencies.
+- Updated `axios` to `1.18.1`.
+- Updated `brace-expansion` to `1.1.16` / `2.1.2` / `5.0.7`.
+- Updated `body-parser` to `1.20.6`.
+
+### Fixed
+
+- Fixed polynomial ReDoS vulnerability in `getOsIndex()` regex patterns in the import Lambda ([CodeQL #1](https://github.com/aws-solutions/qnabot-on-aws/security/code-scanning/1), [#2](https://github.com/aws-solutions/qnabot-on-aws/security/code-scanning/2)).
+- Fixed incomplete string replacement in contraction expansion in the es-proxy-layer ([CodeQL #6](https://github.com/aws-solutions/qnabot-on-aws/security/code-scanning/6)).
+- Fixed website `sanitizeOutput.js` stripping `style` attribute from `<span>` tags, preventing color styling in Content Designer markdown answers (Issue [#869](https://github.com/aws-solutions/qnabot-on-aws/issues/869)).
+- Fixed SSO profile detection in deployment scripts to support SSO sessions (PR [#789](https://github.com/aws-solutions/qnabot-on-aws/pull/789)).
+- Fixed non-deterministic CloudFormation template generation by filtering and sorting extension/example file lists (PR [#795](https://github.com/aws-solutions/qnabot-on-aws/pull/795)).
+
 ## [7.4.0] - 2026-07-01
 
 ### Changed

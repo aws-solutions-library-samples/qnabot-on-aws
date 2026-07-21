@@ -1,6 +1,6 @@
 {
     "name": "qnabot-on-aws-infrastructure",
-    "version": "7.4.0",
+    "version": "7.4.1",
     "description": "QnABot infrastructure",
     "scripts": {
         "clean": "rm -rf node_modules",

@@ -1,6 +1,6 @@
 {
     "name": "ui_import",
-    "version": "7.4.0",
+    "version": "7.4.1",
     "description": "Add new content packages for Content Designer Import Examples/Extensions listing",
     "main": "ui_import.js",
     "scripts": {
