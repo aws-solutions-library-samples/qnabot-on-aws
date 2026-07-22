@@ -1,8 +1,8 @@
-# QnABot on AWS
+# Guidance for QnABot on AWS
 
 ## Overview
 
-QnABot on AWS is a multi-channel, multi-language conversational interface (chatbot) that responds to your customer’s questions, answers, and feedback. It allows you to deploy a fully functional chatbot across multiple channels including chat, voice, SMS, and Amazon Alexa. The solution’s content management environment, and contact center integration wizard allow you to set up and customize an environment that provides the following benefits:
+QnABot on AWS is a multi-channel, multi-language conversational interface (chatbot) that responds to your customer’s questions, answers, and feedback. It allows you to deploy a fully functional chatbot across multiple channels including chat, voice, SMS, and Amazon Alexa. The Guidance’s content management environment, and contact center integration wizard allow you to set up and customize an environment that provides the following benefits:
 
 -   Enhance your customer’s experience by providing personalized tutorials and question and answer support with intelligent multi-part interaction
 
@@ -12,15 +12,15 @@ QnABot on AWS is a multi-channel, multi-language conversational interface (chatb
 
 ## Architecture Overview
 
-Deploying this solution with the default parameters deploys the following components in your AWS account (bordered components are optional).
+Deploying this Guidance with the default parameters deploys the following components in your AWS account (bordered components are optional).
 
 ![Architecture](source/docs/architecture.png)
 
 Figure 1: QnABot on AWS architecture
 
-The high-level process flow for the solution components deployed with the AWS CloudFormation template is as follows:
+The high-level process flow for the Guidance components deployed with the AWS CloudFormation template is as follows:
 
-1.	The admin deploys the solution into their AWS account, opens the Content Designer UI or [Amazon Lex](https://aws.amazon.com/lex/) web client, and uses [Amazon Cognito](https://aws.amazon.com/cognito/) to authenticate.
+1.	The admin deploys the Guidance into their AWS account, opens the Content Designer UI or [Amazon Lex](https://aws.amazon.com/lex/) web client, and uses [Amazon Cognito](https://aws.amazon.com/cognito/) to authenticate.
 
 2. After authentication, [Amazon API Gateway](http://aws.amazon.com/api-gateway/) and [Amazon S3](http://aws.amazon.com/s3/) deliver the contents of the Content Designer UI.
 
@@ -390,6 +390,7 @@ As QnABot evolves over the years, it makes use of various services and functiona
 _Note: **Deployable solution versions** refers to the ability to deploy the version of QnABot in their AWS accounts. **Actively supported versions** for QnABot is only available for the latest version of QnABot._
 
 ### Deployable Versions
+- [v7.4.1](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.4.1) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.1/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.1/qnabot-on-aws-vpc.template)
 - [v7.4.0](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.4.0) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.0/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.0/qnabot-on-aws-vpc.template)
   - _Note: Alexa Skill authorization is now enforced via the new `AlexaSkillIds` CloudFormation parameter. **Existing Alexa users must provide their Alexa Skill ID(s) during stack update** to restore Alexa functionality. New deployments have Alexa disabled by default. See [Getting answers using Amazon Alexa](https://docs.aws.amazon.com/solutions/latest/qnabot-on-aws/step-4-interact-with-the-chatbot.html#getting-answers-using-amazon-alexa) in the Implementation Guide for details._
 - [v7.3.16](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.3.16) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.3.16/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.3.16/qnabot-on-aws-vpc.template)

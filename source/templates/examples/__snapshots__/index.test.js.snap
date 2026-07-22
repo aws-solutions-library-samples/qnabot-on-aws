@@ -3497,13 +3497,13 @@ exports[`renders examples template correctly 1`] = `
               "Resource": [
                 {
                   "Fn::GetAtt": [
-                    "ExampleJSLambdaQuiz",
+                    "ExampleJSLambdahook",
                     "Arn",
                   ],
                 },
                 {
                   "Fn::GetAtt": [
-                    "ExampleJSLambdahook",
+                    "ExampleJSLambdaQuiz",
                     "Arn",
                   ],
                 },
@@ -3527,6 +3527,12 @@ exports[`renders examples template correctly 1`] = `
                 },
                 {
                   "Fn::GetAtt": [
+                    "ExamplePYTHONLambdahello",
+                    "Arn",
+                  ],
+                },
+                {
+                  "Fn::GetAtt": [
                     "ExamplePYTHONLambdaNext",
                     "Arn",
                   ],
@@ -3534,12 +3540,6 @@ exports[`renders examples template correctly 1`] = `
                 {
                   "Fn::GetAtt": [
                     "ExamplePYTHONLambdaPrevious",
-                    "Arn",
-                  ],
-                },
-                {
-                  "Fn::GetAtt": [
-                    "ExamplePYTHONLambdahello",
                     "Arn",
                   ],
                 },

@@ -148,6 +148,7 @@ def test_qna_import_xlsx_exception(cloudformation_stacks_fixture, capfd):
         captured = capfd.readouterr()
         assert "Invalid Excel format" in captured.out
 
+@pytest.mark.filterwarnings("ignore::pytest.PytestUnhandledThreadExceptionWarning")
 def test_qna_export_json(  # NOSONAR 
     cloudformation_stacks_fixture,
 ):

@@ -45,3 +45,24 @@ it('renders examples template correctly', () => {
         },
     });
 });
+
+it('excludes js_lambda_hooks entries without a matching handler file', () => {
+    jest.isolateModules(() => {
+        jest.doMock('fs', () => {
+            const actual = jest.requireActual('fs');
+            return {
+                ...actual,
+                readdirSync: (dir, options) => {
+                    if (!options && dir.endsWith('js_lambda_hooks')) return ['CustomJSHook', 'MissingHandler'];
+                    return actual.readdirSync(dir, options);
+                },
+                existsSync: (filePath) => {
+                    if (filePath.includes('MissingHandler')) return false;
+                    return actual.existsSync(filePath);
+                },
+            };
+        });
+        const template = require(`${__dirname}/`);
+        expect(Object.keys(template.Resources)).not.toContain('EXTMissingHandler');
+    });
+});

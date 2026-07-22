@@ -12629,13 +12629,13 @@ exports.documents = async (event, context) => {
                     {
                       "Fn::GetAtt": [
                         "ExamplesStack",
-                        "Outputs.ExampleJSLambdaQuiz",
+                        "Outputs.ExampleJSLambdahook",
                       ],
                     },
                     {
                       "Fn::GetAtt": [
                         "ExamplesStack",
-                        "Outputs.ExampleJSLambdahook",
+                        "Outputs.ExampleJSLambdaQuiz",
                       ],
                     },
                     {
@@ -12659,6 +12659,12 @@ exports.documents = async (event, context) => {
                     {
                       "Fn::GetAtt": [
                         "ExamplesStack",
+                        "Outputs.ExamplePYTHONLambdahello",
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "ExamplesStack",
                         "Outputs.ExamplePYTHONLambdaNext",
                       ],
                     },
@@ -12666,12 +12672,6 @@ exports.documents = async (event, context) => {
                       "Fn::GetAtt": [
                         "ExamplesStack",
                         "Outputs.ExamplePYTHONLambdaPrevious",
-                      ],
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "ExamplesStack",
-                        "Outputs.ExamplePYTHONLambdahello",
                       ],
                     },
                     {
@@ -17516,13 +17516,13 @@ exports.handler = async (event, context) => {
                     {
                       "Fn::GetAtt": [
                         "ExamplesStack",
-                        "Outputs.ExampleJSLambdaQuiz",
+                        "Outputs.ExampleJSLambdahook",
                       ],
                     },
                     {
                       "Fn::GetAtt": [
                         "ExamplesStack",
-                        "Outputs.ExampleJSLambdahook",
+                        "Outputs.ExampleJSLambdaQuiz",
                       ],
                     },
                     {
@@ -17546,6 +17546,12 @@ exports.handler = async (event, context) => {
                     {
                       "Fn::GetAtt": [
                         "ExamplesStack",
+                        "Outputs.ExamplePYTHONLambdahello",
+                      ],
+                    },
+                    {
+                      "Fn::GetAtt": [
+                        "ExamplesStack",
                         "Outputs.ExamplePYTHONLambdaNext",
                       ],
                     },
@@ -17553,12 +17559,6 @@ exports.handler = async (event, context) => {
                       "Fn::GetAtt": [
                         "ExamplesStack",
                         "Outputs.ExamplePYTHONLambdaPrevious",
-                      ],
-                    },
-                    {
-                      "Fn::GetAtt": [
-                        "ExamplesStack",
-                        "Outputs.ExamplePYTHONLambdahello",
                       ],
                     },
                     {

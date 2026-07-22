@@ -26,7 +26,7 @@ exports.isSameAccountArn = function (arn) {
     if (!arn.startsWith('arn:')) {
         return true;
     }
-    const match = arn.match(/^arn:aws:lambda:[^:]+:(\d{12}):/);
+    const match = arn.match(/^arn:aws[\w-]*:lambda:[^:]+:(\d{12}):/);
     return match && match[1] === process.env.AWS_ACCOUNT_ID;
 };
 
