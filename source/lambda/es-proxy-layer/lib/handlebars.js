@@ -10,6 +10,7 @@ const { signUrls } = require('./signS3URL');
 const _ = require('lodash');
 const Handlebars = require('handlebars');
 const { getSupportedLanguages, getLanguageErrorMessages } = require('./supportedLanguages');
+const { isSafeKeyPath, DANGEROUS_SEGMENTS } = require('./keyGuard');
 
 let res_glbl = {};
 let req_glbl = {};
@@ -145,6 +146,7 @@ Handlebars.registerHelper('resetLang', (msg, options) => {
 
 // Safe property getter — uses _.toPath() for path parsing while blocking prototype traversal
 function safeGet(obj, path, def) {
+    if (!isSafeKeyPath(path)) return def;
     const parts = _.toPath(path);
     let current = obj;
     for (const part of parts) {
@@ -158,8 +160,7 @@ function safeGet(obj, path, def) {
 Handlebars.registerHelper('setSessionAttr', function () {
     const args = Array.from(arguments);
     const k = args[0];
-    const blocked = new Set(['__proto__', 'constructor', 'prototype']);
-    if (_.toPath(k).some(p => blocked.has(p))) return undefined;
+    if (_.toPath(k).some(p => DANGEROUS_SEGMENTS.has(p))) return undefined;
     // concat remaining arguments to create value
     const v_arr = args.slice(1, args.length - 1); // ignore final 'options' argument
     const v = v_arr.join(''); // concatenate value arguments

@@ -5,6 +5,7 @@
 
 const _ = require('lodash');
 const qnabot = require('qnabot/logging');
+const { isSafeKeyPath } = require('../keyGuard');
 
 function useCachedValue(slotName, slot_sessionAttrName, res, slotRequired, nextSlotToElicit) {
     qnabot.log(
@@ -28,6 +29,10 @@ function useSlotValue(slotName, slotValue, res, slotValueCached, slot_sessionAtt
     qnabot.log(`Slot ${slotName} already filled: ${slotValue}`);
     _.set(res, `slots.${slotName}`, slotValue);
     if (slotValueCached) {
+        if (!isSafeKeyPath(slot_sessionAttrName)) {
+            qnabot.log(`WARNING: blocked dangerous slot session attr '${slot_sessionAttrName}'`);
+            return res;
+        }
         qnabot.log(
             `Slot value caching enabled for: '${slotName}' setting session attribute '${slot_sessionAttrName}'`,
         );
@@ -47,6 +52,10 @@ function processSlots(req, res, hit) {
 
     for (const slot of qid_slots) {
         const slotName = _.get(slot, 'slotName');
+        if (!isSafeKeyPath(slotName)) {
+            qnabot.log(`WARNING: blocked dangerous slot name '${slotName}'`);
+            continue;
+        }
         const slotValue = _.get(req, `slots.${slotName}`);
         const slotRequired = _.get(slot, 'slotRequired', false);
         const slotValueCached = _.get(slot, 'slotValueCached');

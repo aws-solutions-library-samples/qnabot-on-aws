@@ -1,6 +1,6 @@
 {
   "name": "streaming",
-  "version": "7.4.1",
+  "version": "7.4.2",
   "description": "Lambda function used to provide for streaming response",
   "repository": {
     "type": "git",
@@ -29,6 +29,6 @@
     "aws-sdk-client-mock-jest": "^4.1.0"
   },
   "overrides": {
-    "fast-xml-parser": "^5.5.6"
+    "fast-xml-parser": "^5.10.1"
   }
 }

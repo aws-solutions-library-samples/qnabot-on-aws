@@ -194,4 +194,101 @@ describe('updateResWithHit', () => {
         );
     });
 
+    describe('addSessionAttributes key validation', () => {
+        test('writes legitimate sa key to session normally', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [{ text: 'myCustomVar', value: 'hello' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(response.session.myCustomVar).toBe('hello');
+        });
+
+        test('writes dot-separated sa key to session normally', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [{ text: 'namespace.subKey', value: 'someValue' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(response.session.namespace.subKey).toBe('someValue');
+        });
+
+        test('blocks sa key __lookupGetter__', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            // The exact sa field from the PoC
+            clonedHit.sa = [{ text: '__lookupGetter__.constructor', value: 'seed' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            // Must NOT write __lookupGetter__ as own property — that would bypass safeGet
+            expect(Object.hasOwn(response.session, '__lookupGetter__')).toBe(false);
+        });
+
+        test('blocks sa key __proto__', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [{ text: '__proto__.polluted', value: 'yes' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(({}).polluted).toBeUndefined();
+        });
+
+        test('blocks sa key constructor', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [{ text: 'constructor.prototype.polluted', value: 'yes' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(Object.hasOwn(response.session, 'constructor')).toBe(false);
+        });
+
+        test('blocks sa key __lookupSetter__', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [{ text: '__lookupSetter__', value: 'attack' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(Object.hasOwn(response.session, '__lookupSetter__')).toBe(false);
+        });
+
+        test('blocks sa key __defineGetter__', () => {
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [{ text: '__defineGetter__', value: 'attack' }];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(Object.hasOwn(response.session, '__defineGetter__')).toBe(false);
+        });
+
+        test('processes subsequent valid sa keys after a blocked one', () => {
+            // A blocked key must not abort processing of the rest of the sa array
+            const clonedReq = _.cloneDeep(req);
+            const clonedRes = _.cloneDeep(res);
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.sa = [
+                { text: '__lookupGetter__.constructor', value: 'seed' },  // blocked
+                { text: 'myValidKey', value: 'validValue' },               // should still write
+            ];
+
+            const response = updateResWithHit(clonedReq, clonedRes, clonedHit);
+
+            expect(Object.hasOwn(response.session, '__lookupGetter__')).toBe(false);
+            expect(response.session.myValidKey).toBe('validValue');
+        });
+    });
+
 })

@@ -472,6 +472,16 @@ describe('handlebars', () => {
             // setSessionAttr always returns '' but should set the session attr
             expect(clonedRes.session.deconstructorMode).toBe('on');
         });
+
+        test('getSessionAttr refuses dangerous segment even if planted as own property', async () => {
+            const clonedRes = _.cloneDeep(res);
+            clonedRes.session.__lookupGetter__ = Object.prototype.__lookupGetter__;
+            const clonedHit = _.cloneDeep(hit);
+            clonedHit.a = '{{getSessionAttr "__lookupGetter__" ""}}';
+            const response = await handlebars(req, clonedRes, clonedHit);
+            expect(response.a).toBe('');
+            expect(typeof response.a).not.toBe('function');
+        });
     });
 });
 

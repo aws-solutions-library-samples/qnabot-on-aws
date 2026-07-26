@@ -87,6 +87,9 @@ do_replace "config.json" %%BUCKET_NAME%% $bucket_name
 do_replace "config.json" %%SOLUTION_NAME%% $solution_name
 do_replace "config.json" %%VERSION%% $version
 
+# Remove stale website.zip to ensure it is always rebuilt by the Vite build
+rm -f build/website.zip
+
 npm run build
 
 echo "------------------------------------------------------------------------------"

@@ -1,6 +1,6 @@
 {
     "name": "testall",
-    "version": "7.4.1",
+    "version": "7.4.2",
     "description": "Lambda function that reads QnAs from opensearch and performs test validation against each question defined in qna against current Lex bot",
     "main": "index.js",
     "scripts": {
@@ -24,7 +24,7 @@
     },
     "overrides": {
         "cross-spawn": "^7.0.6",
-        "fast-xml-parser": "^5.5.6",
+        "fast-xml-parser": "^5.10.1",
         "micromatch": "^4.0.8",
         "sinon": "^21.0.1"
     }

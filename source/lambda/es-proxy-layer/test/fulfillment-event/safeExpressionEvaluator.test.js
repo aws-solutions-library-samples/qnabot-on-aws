@@ -194,13 +194,13 @@ describe('Safe Expression Evaluator', () => {
             test('blocks method not in allowlist', () => {
                 const tokens = tokenize('Question.toString()');
                 expect(() => validateTokens(tokens, mockContext))
-                    .toThrow("Method 'toString' is not allowed");
+                    .toThrow('Security violation');
             });
 
             test('blocks valueOf method', () => {
                 const tokens = tokenize('SessionAttributes.valueOf()');
                 expect(() => validateTokens(tokens, mockContext))
-                    .toThrow("Method 'valueOf' is not allowed");
+                    .toThrow('Security violation');
             });
 
             test('blocks slice method (trimmed from allowlist)', () => {
@@ -475,7 +475,7 @@ describe('Safe Expression Evaluator', () => {
 
             test('rejects non-allowed methods', () => {
                 expect(() => safeEvaluate('Question.toString()', mockContext))
-                    .toThrow("Method 'toString' is not allowed");
+                    .toThrow('Security violation');
             });
 
             test('rejects standalone function calls', () => {
@@ -982,10 +982,13 @@ describe('Safe Expression Evaluator', () => {
         });
 
         test('blocks optional chaining bind (bind?.()', () => {
+            // 'call' is now in BLOCKED_PROPERTIES, so it throws before reaching the ?. check.
+            // The expression 'Question.includes.call.bind?.(...)' is still correctly blocked
+            // — just at an earlier check (BLOCKED_PROPERTIES fires on 'call' token first).
             expect(() => safeEvaluate(
                 'Question.includes.call.bind?.(Question.includes.apply)',
                 ctx
-            )).toThrow('Optional chaining');
+            )).toThrow('Security violation');
         });
 
         test('allows ternary operator (? is not optional chaining when followed by identifier)', () => {
@@ -1003,6 +1006,133 @@ describe('Safe Expression Evaluator', () => {
                 'SessionAttributes.qnabotcontext.navigation.previous.push?.(Question.includes.call)',
                 ctx
             )).toThrow('Optional chaining');
+        });
+    });
+
+    describe('Prototype method property access security', () => {
+        const ctx = {
+            SessionAttributes: { topic: 'weather', qnabotcontext: { navigation: { previous: [] } } },
+            Question: 'test',
+        };
+
+        // Fix A: call, apply, bind must be blocked as property references
+        test('blocks .call as property reference', () => {
+            expect(() => safeEvaluate("Question.includes.call", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .apply as property reference', () => {
+            expect(() => safeEvaluate("Question.includes.apply", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .bind as property reference', () => {
+            expect(() => safeEvaluate("Question.includes.bind", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .toString as property reference', () => {
+            expect(() => safeEvaluate("Question.toString", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .valueOf as property reference', () => {
+            expect(() => safeEvaluate("Question.valueOf", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .hasOwnProperty as property reference', () => {
+            expect(() => safeEvaluate("SessionAttributes.hasOwnProperty", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .isPrototypeOf as property reference', () => {
+            expect(() => safeEvaluate("SessionAttributes.isPrototypeOf", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .propertyIsEnumerable as property reference', () => {
+            expect(() => safeEvaluate("SessionAttributes.propertyIsEnumerable", ctx))
+                .toThrow('Security violation');
+        });
+
+        test('blocks .toLocaleString as property reference', () => {
+            expect(() => safeEvaluate("Question.toLocaleString", ctx))
+                .toThrow('Security violation');
+        });
+
+        // Fix A: parenthesis-wrapping bypass (PoC Stage 1 pattern) must now be blocked
+        // Previously (push)(...) bypassed checkMethodCall because nextToken after push was ) not (
+        // Now .call/.apply/.bind in BLOCKED_PROPERTIES fire before the parenthesis pattern matters
+        test('blocks parenthesis-wrapping with call.bind(apply)', () => {
+            expect(() => safeEvaluate(
+                '(SessionAttributes.qnabotcontext.navigation.previous.push)((Question.includes.call.bind)(Question.includes.apply))',
+                ctx
+            )).toThrow('Security violation');
+        });
+
+        test('blocks full conditionalChaining expression using parenthesis-wrapping', () => {
+            const fullExpr = [
+                '(SessionAttributes.qnabotcontext.navigation.previous.push)((Question.includes.call.bind)(Question.includes.apply))',
+                '(SessionAttributes.qnabotcontext.navigation.previous.push)(Question.split)',
+                '(SessionAttributes.qnabotcontext.navigation.previous.push)((SessionAttributes.qnabotcontext.navigation.previous.fill.bind)(SessionAttributes.qnabotcontext.navigation.previous))',
+                '(SessionAttributes.qnabotcontext.navigation.previous.push)("slot")',
+                '"revenge isolated mango target"',
+            ].join(' && ');
+            expect(() => safeEvaluate(fullExpr, ctx)).toThrow('Security violation');
+        });
+
+        // Existing allowed methods must still work after Fix A
+        test('still allows allowed methods: includes, startsWith, endsWith, toLowerCase, toUpperCase, trim, indexOf', () => {
+            expect(safeEvaluate("Question.includes('test')", ctx)).toBe(true);
+            expect(safeEvaluate("Question.startsWith('te')", ctx)).toBe(true);
+            expect(safeEvaluate("Question.endsWith('st')", ctx)).toBe(true);
+            expect(safeEvaluate("Question.toLowerCase()", ctx)).toBe('test');
+            expect(safeEvaluate("Question.toUpperCase()", ctx)).toBe('TEST');
+            expect(safeEvaluate("Question.trim()", ctx)).toBe('test');
+            expect(safeEvaluate("Question.indexOf('es')", ctx)).toBe(1);
+        });
+
+        // Ternary operator still works (not confused with optional chaining)
+        test('still allows ternary operator (? is not a blocked token)', () => {
+            expect(safeEvaluate(
+                "SessionAttributes.topic === 'weather' ? 'yes' : 'no'",
+                ctx
+            )).toBe('yes');
+        });
+    });
+
+    describe('parenthesis-wrapping structural fix', () => {
+        const ctx = {
+            SessionAttributes: { topic: 'weather', qnabotcontext: { navigation: { previous: [] } } },
+            Question: 'test',
+            Sentiment: 0.75,
+        };
+
+        test('blocks (Question.split)(a) via parenthesis-wrapping — non-blocklisted method', () => {
+            expect(() => safeEvaluate("(Question.split)('a')", ctx))
+                .toThrow('Security violation: calling a parenthesized expression is not allowed');
+        });
+
+        test('blocks (SessionAttributes...push)(x) via parenthesis-wrapping', () => {
+            expect(() => safeEvaluate(
+                "(SessionAttributes.qnabotcontext.navigation.previous.push)('x')",
+                ctx
+            )).toThrow('Security violation: calling a parenthesized expression is not allowed');
+        });
+
+        test('regression: legitimate grouping (Sentiment > 0.5) && (Question.includes) still works', () => {
+            expect(safeEvaluate(
+                "(Sentiment > 0.5) && (Question.includes('test'))",
+                ctx
+            )).toBe(true);
+        });
+
+        test('regression: (a > b) grouping for precedence still works', () => {
+            expect(safeEvaluate(
+                "(Sentiment > 0.5) ? 'positive' : 'negative'",
+                ctx
+            )).toBe('positive');
         });
     });
 });

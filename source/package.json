@@ -1,6 +1,6 @@
 {
     "name": "qnabot-on-aws",
-    "version": "7.4.1",
+    "version": "7.4.2",
     "engines": {
         "node": ">=24.0.0",
         "npm": ">=11.0.0"
@@ -183,7 +183,7 @@
         "bn.js": "^5.2.3",
         "cross-spawn": "^7.0.6",
         "elliptic": "^6.6.1",
-        "fast-xml-parser": "^5.5.6",
+        "fast-xml-parser": "^5.10.1",
         "follow-redirects": "^1.15.6",
         "form-data": "^4.0.4",
         "micromatch": "^4.0.8",
