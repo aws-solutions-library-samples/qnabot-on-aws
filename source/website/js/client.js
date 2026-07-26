@@ -9,15 +9,32 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import '@fontsource/material-icons';
 import { createApp } from 'vue';
+import * as Vue from 'vue';
 import { aliases, md } from 'vuetify/iconsets/md';
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 import { createVuetify } from 'vuetify';
+import * as Vuetify from 'vuetify';
 import { createStore } from 'vuex';
+import * as Vuex from 'vuex';
 import 'vuetify/styles';
 import axios from 'axios';
 import 'aws-lex-web-ui/dist/lex-web-ui.min.css';
 import Auth from './lib/client-auth';
+
+// aws-lex-web-ui's UMD wrapper calls require("Vue")/require("Vuetify")/require("Vuex").
+// There's no native require() in the browser, so shim it here at module top-level,
+// before the dynamic import of aws-lex-web-ui below can invoke it.
+globalThis.Vue = globalThis.Vue || Vue;
+globalThis.Vuetify = globalThis.Vuetify || Vuetify;
+globalThis.Vuex = globalThis.Vuex || Vuex;
+globalThis.require = globalThis.require || ((name) => {
+    const externalModules = { Vue: globalThis.Vue, Vuetify: globalThis.Vuetify, Vuex: globalThis.Vuex };
+    if (name in externalModules) {
+        return externalModules[name];
+    }
+    throw new Error(`Cannot resolve module "${name}"`);
+});
 
 let store = null;
 let authConfig = null;

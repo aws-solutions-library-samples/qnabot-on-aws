@@ -1,6 +1,6 @@
 {
     "name": "qnabot-common-layer",
-    "version": "7.4.1",
+    "version": "7.4.2",
     "description": "Lambda layers used to provide common logging and utility functions",
     "repository": {
         "type": "git",
@@ -32,7 +32,7 @@
     },
     "overrides": {
         "cross-spawn": "^7.0.6",
-        "fast-xml-parser": "^5.5.6",
+        "fast-xml-parser": "^5.10.1",
         "micromatch": "^4.0.8",
         "sinon": "^21.0.1"
     }

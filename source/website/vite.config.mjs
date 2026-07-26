@@ -60,6 +60,9 @@ export default defineConfig({
       }
     },
     rollupOptions: {
+      // aws-lex-web-ui references Vue, Vuex, and Vuetify as CJS externals —
+      // declare them external so Rolldown does not error on unresolved require() imports
+      external: ['Vue', 'Vuex', 'Vuetify'],
       input: {
         main: resolve(__dirname, 'index.html'),
         client: resolve(__dirname, 'client.html'),
@@ -198,7 +201,12 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, 'js'),
       // Provide empty modules for Node.js-only dependencies
-      'source-map-js': resolve(__dirname, 'js/lib/empty-module.js')
+      'source-map-js': resolve(__dirname, 'js/lib/empty-module.js'),
+      // aws-lex-web-ui's Component uses a raw string template, which needs Vue's
+      // runtime compiler. The default "vue" resolution is compiler-less and fails
+      // silently in production (no warning - see vue.runtime.esm-bundler.js compile()).
+      // Alias to the compiler-included build so the template actually renders.
+      'vue': resolve(__dirname, '../node_modules/vue/dist/vue.esm-bundler.js'),
     }
   },
 

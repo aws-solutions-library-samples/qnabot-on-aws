@@ -60,5 +60,31 @@ describe('When calling processSlots function', () => {
 
         expect(processSlotResponse).toMatchObject(empty_obj);
     })
+
+    test('blocks slot name that would plant a prototype property into res.session', () => {
+        const hit = { slots: [{ slotName: '__lookupGetter__', slotRequired: false, slotValueCached: true }] };
+        const req = { slots: { '__lookupGetter__': 'malicious' } };
+        const res = { session: {} };
+        const out = processSlots(req, res, hit);
+        expect(Object.hasOwn(out.session?.qnabotcontext?.slot ?? {}, '__lookupGetter__')).toBe(false);
+        expect(Object.hasOwn(out.slots ?? {}, '__lookupGetter__')).toBe(false);
+    });
+
+    test('legitimate slot name still cached correctly', () => {
+        const hit = { slots: [{ slotName: 'city', slotRequired: false, slotValueCached: true }] };
+        const req = { slots: { city: 'Seattle' } };
+        const res = { session: {} };
+        const out = processSlots(req, res, hit);
+        expect(out.slots.city).toBe('Seattle');
+        expect(out.session.qnabotcontext.slot.city).toBe('Seattle');
+    });
+
+    test('blocks dangerous slot name in fallback path (no matching req.slots entry)', () => {
+        const hit = { slots: [{ slotName: '__proto__', slotRequired: true, slotValueCached: false }] };
+        const req = { slots: {} };
+        const res = { session: {} };
+        const out = processSlots(req, res, hit);
+        expect(out.slots?.['__proto__']).toBeUndefined();
+    });
 });
 

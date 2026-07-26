@@ -32,7 +32,16 @@ const BLOCKED_PROPERTIES = new Set([
     '__lookupGetter__',
     '__lookupSetter__',
     'constructor',
-    'prototype'
+    'prototype',
+    'call',
+    'apply',
+    'bind',
+    'toString',
+    'valueOf',
+    'hasOwnProperty',
+    'isPrototypeOf',
+    'propertyIsEnumerable',
+    'toLocaleString',
 ]);
 
 // Operators that enable assignment or mutation
@@ -320,6 +329,11 @@ function validateTokens(tokens, context) {
         checkTopLevelIdentifier(token, prevToken, contextKeys);
         if (token === '?' && nextToken === '.') {
             throw new Error(`Security violation: Optional chaining (?.) is not allowed`);
+        }
+        // Reject calling the result of a grouped expression: (...)( ... )
+        // This blocks the parenthesis-wrapping bypass where (obj.method)(args) evades checkMethodCall
+        if (token === '(' && prevToken === ')') {
+            throw new Error('Security violation: calling a parenthesized expression is not allowed');
         }
     }
 }

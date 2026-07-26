@@ -6,6 +6,7 @@
 const _ = require('lodash');
 const qnabot = require('qnabot/logging');
 const { sanitize } = require('../sanitizeOutput');
+const { DANGEROUS_SEGMENTS } = require('../keyGuard');
 
 function updateSessionNavigation(res, req) {
     const previousQid = _.get(res, 'session.qnabotcontext.previous.qid', false);
@@ -46,6 +47,11 @@ function updateSessionNavigation(res, req) {
 function addSessionAttributes(hit, res) {
     if (_.get(hit, 'sa')) {
         hit.sa.map((obj) => {
+            const keyParts = _.toPath(obj.text);
+            if (keyParts.some(p => DANGEROUS_SEGMENTS.has(p))) {
+                qnabot.log(`WARNING: Blocked sa key '${obj.text}' — contains forbidden property name. Skipping.`);
+                return;
+            }
             _.set(res, `session.${obj.text}`, obj.value);
         });
     }
