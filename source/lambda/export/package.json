@@ -1,6 +1,6 @@
 {
     "name": "export",
-    "version": "7.4.2",
+    "version": "7.4.3",
     "description": "QnABot Lambda handling export of QIDs",
     "main": "index.js",
     "scripts": {
@@ -21,6 +21,7 @@
         "jest": "^29.7.0"
     },
     "overrides": {
+        "brace-expansion": "^5.0.8",
         "cross-spawn": "^7.0.6",
         "micromatch": "^4.0.8",
         "sinon": "^21.0.1"
