@@ -1,6 +1,6 @@
 {
     "name": "proxy-es",
-    "version": "7.4.2",
+    "version": "7.4.3",
     "description": "QnABot Lambda managing querying of data store",
     "main": "index.js",
     "scripts": {
@@ -42,7 +42,7 @@
         "uglify-js": "^3.19.2",
         "micromatch": "^4.0.8",
         "sinon": "^21.0.1",
-        "postcss": "^8.5.10",
+        "postcss": "^8.5.23",
         "langsmith": ">=0.6.0",
         "form-data": ">=4.0.6",
         "@babel/core": "^7.29.6",
@@ -53,6 +53,7 @@
         },
         "@langchain/core": {
             "uuid": "^11.1.1"
-        }
+        },
+        "brace-expansion": "^5.0.8"
     }
 }

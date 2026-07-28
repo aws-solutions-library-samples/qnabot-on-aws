@@ -1,6 +1,6 @@
 {
     "name": "connect",
-    "version": "7.4.2",
+    "version": "7.4.3",
     "description": "Lambda function used to support the Connect setup wizard",
     "repository": {
         "type": "git",
@@ -24,6 +24,7 @@
         "jest": "^29.7.0"
     },
     "overrides": {
+        "brace-expansion": "^5.0.8",
         "cross-spawn": "^7.0.6",
         "micromatch": "^4.0.8"
     }
