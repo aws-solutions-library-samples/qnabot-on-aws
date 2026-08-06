@@ -1,6 +1,6 @@
 {
     "name": "aws-layer",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "description": "QnABot Lambda aws-sdk-layer",
     "main": "index.js",
     "scripts": {

@@ -1,6 +1,6 @@
 {
     "name": "cfn",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "description": "QnABot Cfn Lambda",
     "main": "index.js",
     "scripts": {
@@ -35,7 +35,7 @@
         "lodash": "^4.17.23"
     },
     "overrides": {
-        "brace-expansion": "^5.0.8",
+        "brace-expansion": "^5.0.9",
         "async": "^2.6.4",
         "cross-spawn": "7.0.6",
         "fast-xml-parser": "^5.10.1",

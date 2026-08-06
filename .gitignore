@@ -78,6 +78,10 @@ temp/
 **/deployment/regional-s3-assets
 **/deployment/open-source
 
+# generated from source/bin/sanitizeAllowlist.js — see source/bin/README.md
+source/lambda/es-proxy-layer/lib/sanitizeOutput.js
+source/website/js/components/designer/sanitizeOutput.js
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

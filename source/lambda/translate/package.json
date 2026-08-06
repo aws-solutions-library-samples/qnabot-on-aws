@@ -1,6 +1,6 @@
 {
     "name": "translate",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "description": "Lambda function used to import custom terminologies into AWS Translate",
     "repository": {
         "type": "git",
@@ -25,7 +25,7 @@
         "jest": "^29.7.0"
     },
     "overrides": {
-        "brace-expansion": "^5.0.8",
+        "brace-expansion": "^5.0.9",
         "cross-spawn": "^7.0.6",
         "micromatch": "^4.0.8",
         "sinon": "^21.0.1"

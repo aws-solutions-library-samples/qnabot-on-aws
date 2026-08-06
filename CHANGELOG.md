@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.4.4] - 2026-08-06
+
+### Security
+
+- Updated `brace-expansion` to `5.0.9`.
+- Updated `cryptography` to `50.0.0`.
+- Downgraded `bodybuilder` to `2.4.0`, removing the vulnerable `lodash.unset` transitive dependency.
+- Unified the sanitize-html allowlist shared between the Fulfillment Lambda and Content Designer into a single canonical source, automatically synced at build time.
+
+### Fixed
+
+- Fixed NightSwatch `test_llm.py` functional tests to configure only one of `temperature`/`topP` for Bedrock LLM model params, matching Claude 4.x-class model requirements.
+
 ## [7.4.3] - 2026-07-28
 
 ### Security

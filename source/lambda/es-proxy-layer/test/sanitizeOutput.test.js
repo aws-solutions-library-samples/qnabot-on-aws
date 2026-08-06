@@ -52,3 +52,42 @@ describe('should be able to escape hash sybmbol to prevent markdown issue', () =
         expect(escapeHashMarkdown(text3)).toBe(expectedOutput);
       });
   });
+
+describe('allowlist sync check — Lambda sanitizeOutput.js must not have drifted from source/bin/sanitizeAllowlist.js', () => {
+    // If any case below fails: node source/bin/sync-sanitize-allowlist.js
+    const sanitizeHtml = require('sanitize-html');
+    const { SANITIZE_ALLOWLIST } = require('../../../bin/sanitizeAllowlist');
+
+    function sanitizeFromCanonical(data) {
+        const sanitizeParams = {
+            allowedTags: sanitizeHtml.defaults.allowedTags.concat(SANITIZE_ALLOWLIST.extraAllowedTags),
+            allowedAttributes: { ...sanitizeHtml.defaults.allowedAttributes, ...SANITIZE_ALLOWLIST.extraAllowedAttributes },
+            allowedStyles: SANITIZE_ALLOWLIST.allowedStyles,
+            allowedSchemesByTag: SANITIZE_ALLOWLIST.allowedSchemesByTag,
+        };
+        return sanitizeHtml(data, sanitizeParams);
+    }
+
+    const testCases = [
+        '<details><summary>x</summary>y</details>',
+        '<img src="https://example.com/img.png" alt="test" />',
+        '<img src="data:image/png;base64,aGVsbG8=" />',
+        '<p style="white-space: pre-line">text</p>',
+        '<span translate="no">text</span>',
+        '<span style="color: #ff0000">text</span>',
+        '<span style="color: rgb(255, 0, 0)">text</span>',
+        '<a href="https://example.com">link</a>',
+        '<a href="mailto:test@example.com">mail</a>',
+        '<a href="tel:+15551234567">tel</a>',
+        '<question>q</question><references>r</references><chatHistory>h</chatHistory><followUpMessage>f</followUpMessage>',
+        '<img src="x" onerror="alert(1)" />',
+        '<a href="javascript:alert(1)">x</a>',
+        '<script>alert(1)</script>',
+    ];
+
+    testCases.forEach((input) => {
+        it(`matches canonical allowlist output for: ${input}`, () => {
+            expect(sanitize(input)).toBe(sanitizeFromCanonical(input));
+        });
+    });
+});

@@ -34,6 +34,8 @@ LLM_QA_ENABLE_ID = 'LLM_QA_ENABLE'
 LLM_QA_USE_KENDRA_RETRIEVAL_API_ID = 'LLM_QA_USE_KENDRA_RETRIEVAL_API'
 LLM_QA_SHOW_CONTEXT_TEXT_ID = 'LLM_QA_SHOW_CONTEXT_TEXT'
 LLM_QA_SHOW_SOURCE_LINKS_ID = 'LLM_QA_SHOW_SOURCE_LINKS'
+LLM_QA_MODEL_PARAMS_ID = 'LLM_QA_MODEL_PARAMS'
+LLM_GENERATE_QUERY_MODEL_PARAMS_ID = 'LLM_GENERATE_QUERY_MODEL_PARAMS'
 
 PRE_PROCESSING_LAMBDA_ID = 'LAMBDA_PREPROCESS_HOOK'
 POST_PROCESSING_LAMBDA_ID = 'LAMBDA_POSTPROCESS_HOOK'
@@ -344,6 +346,31 @@ class SettingsPage:
 
         enable_source_links = self.operator.select_id(LLM_QA_SHOW_SOURCE_LINKS_ID)
         self.__set_element_value(enable_source_links, 'false')
+
+        return self.save_settings()
+
+    def set_llm_model_params(self, model_params: str = '{"temperature":0.1}') -> str:
+        """
+        Sets LLM_QA_MODEL_PARAMS and LLM_GENERATE_QUERY_MODEL_PARAMS to a value without `topP`
+        and saves the changes.
+
+        The out-of-the-box default for both settings (`{"temperature":0, "maxTokens":300, "topP":1}`)
+        is rejected by Claude 4.x-class Bedrock models (e.g. Claude Haiku 4.5), which do not accept
+        both `temperature` and `topP` in the same request. Setting either param alone (as done here)
+        is the supported way to use these settings with such models.
+
+        Args:
+            model_params: JSON string to set for both settings. Defaults to temperature-only.
+
+        Returns:
+            The status of the save operation.
+        """
+
+        qa_model_params = self.operator.select_id(LLM_QA_MODEL_PARAMS_ID)
+        self.__set_element_value(qa_model_params, model_params)
+
+        generate_query_model_params = self.operator.select_id(LLM_GENERATE_QUERY_MODEL_PARAMS_ID)
+        self.__set_element_value(generate_query_model_params, model_params)
 
         return self.save_settings()
 

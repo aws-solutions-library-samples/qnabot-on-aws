@@ -1,6 +1,6 @@
 {
     "name": "proxy-es",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "description": "QnABot Lambda managing querying of data store",
     "main": "index.js",
     "scripts": {
@@ -22,7 +22,7 @@
         "@dqbd/tiktoken": "^1.0.7",
         "aws4": "^1.6.0",
         "axios": "^1.13.5",
-        "bodybuilder": "^2.5.1",
+        "bodybuilder": "2.4.0",
         "handlebars": "^4.7.9",
         "langchain": "^0.3.37",
         "linkifyjs": "^4.3.2",
@@ -54,6 +54,6 @@
         "@langchain/core": {
             "uuid": "^11.1.1"
         },
-        "brace-expansion": "^5.0.8"
+        "brace-expansion": "^5.0.9"
     }
 }

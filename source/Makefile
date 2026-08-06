@@ -27,7 +27,7 @@ build: All
 make_directories:
 	mkdir -p build/lambda build/documents build/templates/test  build/templates/dev
 
-.PHONY: lambda templates upload website test bootstrap assets config.aws-solutions.json
+.PHONY: lambda templates upload website test bootstrap assets config.aws-solutions.json sync-allowlist
 .PHONY: $(TEMPLATES)
 
 config.json:
@@ -36,7 +36,12 @@ config.json:
 config.aws-solutions.json:
 	node bin/config.js buildType=AWSSolutions > config.json
 
-lambda:  make_directories
+# Regenerates sanitizeOutput.js in es-proxy-layer and website from
+# sanitizeAllowlist.js (also in bin/). See bin/README.md.
+sync-allowlist:
+	node bin/sync-sanitize-allowlist.js
+
+lambda: make_directories sync-allowlist
 	make -C ./lambda
 
 bootstrap: make_directories
@@ -47,7 +52,7 @@ templates: $(TEMPLATES)
 $(TEMPLATES): make_directories
 	$(MAKE) -C $@
 
-website: make_directories
+website: make_directories sync-allowlist
 	$(MAKE) -C ./website
 
 assets: make_directories

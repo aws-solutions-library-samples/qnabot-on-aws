@@ -51,6 +51,11 @@ class TestLlm:
         settings_page.reset_settings()
         settings_page.expand_all_subgroups()
         assert 'Success' in settings_page.enable_llm()
+        # The out-of-the-box default for LLM_QA_MODEL_PARAMS/LLM_GENERATE_QUERY_MODEL_PARAMS
+        # (both temperature and topP set) is rejected by Claude 4.x-class Bedrock models
+        # (e.g. Claude Haiku 4.5, the template default LLMBedrockModelId). Setting temperature
+        # only here matches the product's own supported usage for such models.
+        assert 'Success' in settings_page.set_llm_model_params()
         assert 'Success' in settings_page.enable_embeddings()
         assert 'Success' in settings_page.enable_multi_language_support()
 
