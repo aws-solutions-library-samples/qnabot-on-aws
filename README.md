@@ -390,6 +390,7 @@ As QnABot evolves over the years, it makes use of various services and functiona
 _Note: **Deployable solution versions** refers to the ability to deploy the version of QnABot in their AWS accounts. **Actively supported versions** for QnABot is only available for the latest version of QnABot._
 
 ### Deployable Versions
+- [v7.4.4](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.4.4) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.4/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.4/qnabot-on-aws-vpc.template)
 - [v7.4.3](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.4.3) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.3/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.3/qnabot-on-aws-vpc.template)
 - [v7.4.2](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.4.2) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.2/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.2/qnabot-on-aws-vpc.template)
 - [v7.4.1](https://github.com/aws-solutions/qnabot-on-aws/releases/tag/v7.4.1) - [Public](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.1/qnabot-on-aws-main.template)/[VPC](https://solutions-reference.s3.amazonaws.com/qnabot-on-aws/v7.4.1/qnabot-on-aws-vpc.template)

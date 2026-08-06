@@ -1,6 +1,6 @@
 {
     "name": "testall",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "description": "Lambda function that reads QnAs from opensearch and performs test validation against each question defined in qna against current Lex bot",
     "main": "index.js",
     "scripts": {
@@ -23,7 +23,7 @@
         "@aws-sdk/client-lex-runtime-v2": "^3.699.0"
     },
     "overrides": {
-        "brace-expansion": "^5.0.8",
+        "brace-expansion": "^5.0.9",
         "cross-spawn": "^7.0.6",
         "fast-xml-parser": "^5.10.1",
         "micromatch": "^4.0.8",

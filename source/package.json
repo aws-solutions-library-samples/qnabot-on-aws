@@ -1,6 +1,6 @@
 {
     "name": "qnabot-on-aws",
-    "version": "7.4.3",
+    "version": "7.4.4",
     "engines": {
         "node": ">=24.0.0",
         "npm": ">=11.0.0"
@@ -175,7 +175,7 @@
         "vitest": "^4.1.2"
     },
     "overrides": {
-        "brace-expansion": "^5.0.8",
+        "brace-expansion": "^5.0.9",
         "vite-plugin-node-polyfills": {
             "vite": "$vite"
         },

@@ -1,6 +1,6 @@
 {
   "name": "warmer",
-  "version": "7.4.3",
+  "version": "7.4.4",
   "description": "QnABot lambda to enhance OpenSearch Index performance",
   "main": "index.js",
   "scripts": {

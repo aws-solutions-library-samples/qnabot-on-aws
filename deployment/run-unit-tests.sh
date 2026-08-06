@@ -150,6 +150,10 @@ starting_dir=$PWD
 cd ../source
 source_dir=$PWD
 
+# Regenerate sanitizeOutput.js in es-proxy-layer/website from sanitizeAllowlist.js
+# before their tests run (this script bypasses the Makefile's own sync step).
+node bin/sync-sanitize-allowlist.js
+
 # Option to clean or not clean the unit test environment before and after running tests.
 # The environment variable CLEAN has default of 'true' and can be overwritten by caller
 # by setting it to 'false'. Particularly,

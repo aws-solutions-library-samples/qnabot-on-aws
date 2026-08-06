@@ -5,6 +5,7 @@ RESOURCES := $(shell  find . | grep -v node_modules | grep -v test )
 
 $(DST): $(RESOURCES) 
 	echo "Building $(NAME)"; 
+	node ../../bin/sync-sanitize-allowlist.js
 	rm -r ./nodejs || true
 	rm -r ./node_modules || true
 	npm install  -production

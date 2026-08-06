@@ -9,9 +9,22 @@ import { visualizer } from 'rollup-plugin-visualizer';
 import archiver from 'archiver';
 import { createWriteStream } from 'fs';
 import { mkdir } from 'fs/promises';
+import { spawnSync } from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+// Regenerates sanitizeOutput.js from sanitizeAllowlist.js before every build,
+// so it's covered regardless of which script invokes vite build.
+function syncAllowlistPlugin() {
+  return {
+    name: 'sync-allowlist',
+    buildStart: () => {
+      const result = spawnSync('node', [resolve(__dirname, '../bin/sync-sanitize-allowlist.js')], { stdio: 'inherit' });
+      if (result.status !== 0) throw new Error('sync-sanitize-allowlist.js failed');
+    }
+  };
+}
 
 // Plugin to create website.zip after build
 function zipBuildPlugin() {
@@ -109,6 +122,7 @@ export default defineConfig({
 
   // Plugins array
   plugins: [
+    syncAllowlistPlugin(),
     vue({
       template: {
         compilerOptions: {
