@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.4.5] - 2026-08-11
+
+### Security
+
+- Updated `js-yaml` to `3.15.1` and `4.3.1`.
+- Updated `nanoid` to `3.3.18`.
+
 ## [7.4.4] - 2026-08-06
 
 ### Security
