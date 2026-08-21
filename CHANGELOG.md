@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [7.4.6] - 2026-08-21
+
+### Security
+
+- Fixed Lex session attribute injection on S3 read.
+- Upgraded Amazon OpenSearch Service domain TLS security policy to add TLS 1.3 and Perfect Forward Secrecy cipher support.
+
+### Fixed
+
+- Associated Cognito login labels with their inputs.
+
 ## [7.4.5] - 2026-08-11
 
 ### Security

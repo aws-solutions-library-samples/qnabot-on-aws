@@ -32,7 +32,7 @@ const properties = {
     },
     DomainEndpointOptions: {
         EnforceHTTPS: true,
-        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-2019-07',
+        TLSSecurityPolicy: 'Policy-Min-TLS-1-2-PFS-2023-10',
     },
     VPCOptions: {
         'Fn::If': ['VPCEnabled', {
