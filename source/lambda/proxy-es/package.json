@@ -1,6 +1,6 @@
 {
     "name": "proxy-es",
-    "version": "7.4.5",
+    "version": "7.4.6",
     "description": "QnABot Lambda function is used to proxy request from ApiGateway to OpenSearch",
     "main": "index.js",
     "author": {

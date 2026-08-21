@@ -74,22 +74,127 @@ def get_args_from_lambdahook_args(event):
     return parameters
 
 
-def get_s3_file(s3_path):
+def get_s3_file(s3_path, verified_identity_id):
     if s3_path.startswith("s3://"):
         s3_path = s3_path[5:]
-    s3 = boto3.resource('s3', config=BOTO3_CONFIG)
     bucket, key = s3_path.split("/", 1)
+    # Only allow reading files under the caller's Cognito-verified Identity ID.
+    if not verified_identity_id or not (key == verified_identity_id or key.startswith(f"{verified_identity_id}/")):
+        print(f"get_s3_file: rejecting s3_path not scoped to caller's verified "
+              f"identity ({verified_identity_id!r}): {bucket}/{key}")
+        return None
+    s3 = boto3.resource('s3', config=BOTO3_CONFIG)
     obj = s3.Object(bucket, key)
     return obj.get()['Body'].read()
 
 
-def get_attachments(event):
+COGNITO_IDENTITY_REGION = os.environ.get("COGNITO_IDENTITY_REGION") or AMAZONQ_REGION
+COGNITO_IDENTITY_CLIENT = boto3.client('cognito-identity', region_name=COGNITO_IDENTITY_REGION, config=BOTO3_CONFIG)
+
+# Caches the discovered Identity Pool ID per login provider across warm
+# Lambda invocations, so discovery only runs once per cold start.
+_IDENTITY_POOL_ID_CACHE = {}
+
+
+def get_user_pool_login_provider(idtokenjwt):
+    """Derives the Cognito `Logins` provider key (e.g.
+    "cognito-idp.us-east-1.amazonaws.com/us-east-1_XXXXXXXXX") from the
+    token's own `iss` claim, avoiding a separate CognitoUserPoolId setting.
+    The token's issuer is already verified upstream, so trusting `iss`
+    here adds no new unverified input.
+    """
+    decoded = json.loads(base64.urlsafe_b64decode(idtokenjwt.split('.')[1] + '==').decode())
+    iss = decoded.get("iss", "")
+    return iss.split("://", 1)[-1]
+
+
+def discover_identity_pool_id(login_provider, cognito_identity_client):
+    """Finds the Identity Pool that trusts the given User Pool login
+    provider, avoiding a separate CognitoIdentityPoolId setting. There's
+    no direct Cognito API for this reverse lookup, so it scans every
+    Identity Pool in the account/region for a matching provider, caching
+    the result (see _IDENTITY_POOL_ID_CACHE).
+
+    Returns None if no pool trusts this User Pool.
+    """
+    if login_provider in _IDENTITY_POOL_ID_CACHE:
+        return _IDENTITY_POOL_ID_CACHE[login_provider]
+    paginator = cognito_identity_client.get_paginator("list_identity_pools")
+    for page in paginator.paginate(MaxResults=60):
+        for pool in page.get("IdentityPools", []):
+            pool_id = pool["IdentityPoolId"]
+            detail = cognito_identity_client.describe_identity_pool(IdentityPoolId=pool_id)
+            providers = detail.get("CognitoIdentityProviders", [])
+            if any(p.get("ProviderName") == login_provider for p in providers):
+                _IDENTITY_POOL_ID_CACHE[login_provider] = pool_id
+                return pool_id
+    print(f"discover_identity_pool_id: no Identity Pool found trusting provider {login_provider!r}")
+    # Do not cache negative results, so a later-created pool or a transient
+    # list_identity_pools failure can be re-discovered on the next request.
+    return None
+
+
+def verify_identity_matches_cognito(claimed_session_id, idtokenjwt, cognito_identity_client):
+    """Verifies claimed_session_id is genuinely the caller's Cognito
+    Identity ID by asking cognito-identity:GetId to recompute it from
+    this request's verified token, and comparing the two.
+
+    This is stateless and authoritative on every request, including the
+    first -- unlike an earlier DynamoDB-binding design (see git history)
+    that trusted an unclaimed session_id on its first use.
+
+    Returns True if claimed_session_id matches; False otherwise (reject).
+    """
+    if not claimed_session_id:
+        return False
+    try:
+        login_provider = get_user_pool_login_provider(idtokenjwt)
+        if not login_provider:
+            print("verify_identity_matches_cognito: could not derive login provider "
+                  "from idtokenjwt's iss claim -- rejecting (fail closed)")
+            return False
+        identity_pool_id = discover_identity_pool_id(login_provider, cognito_identity_client)
+        if not identity_pool_id:
+            print("verify_identity_matches_cognito: no Identity Pool discovered for "
+                  f"{login_provider!r} -- rejecting (fail closed)")
+            return False
+        response = cognito_identity_client.get_id(
+            IdentityPoolId=identity_pool_id,
+            Logins={login_provider: idtokenjwt},
+        )
+    except Exception as e:
+        # Fail closed on any error -- malformed/non-JWT token, Cognito
+        # throttling, transient failure, etc. A security check that fails
+        # open on error is not a security check.
+        print(f"verify_identity_matches_cognito: verification failed: {e}")
+        return False
+    actual_identity_id = response.get("IdentityId")
+    if actual_identity_id != claimed_session_id:
+        print(f"verify_identity_matches_cognito: rejecting -- claimed session_id "
+              f"{claimed_session_id!r} does not match the Identity ID Cognito computed "
+              f"for this request's verified token ({actual_identity_id!r})")
+        return False
+    return True
+
+
+def get_attachments(event, idtokenjwt, cognito_identity_client):
+    session_id = event["req"].get("_event", {}).get("sessionId")
+    if not verify_identity_matches_cognito(session_id, idtokenjwt, cognito_identity_client):
+        event["res"]["session"].pop("userFilesUploaded", None)
+        return []
     user_files_uploaded = event["req"]["session"].get("userFilesUploaded", [])
     attachments = []
     for user_file in user_files_uploaded:
         print(f"getAttachments: userFile={user_file}")
+        try:
+            data = get_s3_file(user_file.get("s3Path"), session_id)
+        except Exception as e:
+            print(f"get_s3_file: failed to read {user_file.get('s3Path')}: {e}")
+            data = None
+        if data is None:
+            continue
         attachments.append({
-            "data": get_s3_file(user_file["s3Path"]),
+            "data": data,
             "name": user_file["fileName"]
         })
     # delete userFilesUploaded from session
@@ -195,15 +300,20 @@ def get_idc_iam_credentials(jwt):
 def lambda_handler(event, context): # NOSONAR Lambda Handler
     print("Received event: %s" % json.dumps(event))
     args = get_args_from_lambdahook_args(event) # NOSONAR args for Lambda Handler
-    # prompt set from args, or from the original query if not specified in args.
-    user_input = event["req"]["llm_generated_query"]["orig"]
+    # llm_generated_query is only set when LLM_GENERATE_QUERY_ENABLE is on;
+    # fall back to req.question, matching llm.js's own fallback.
+    user_input = event["req"].get("llm_generated_query", {}).get("orig") or event["req"]["question"]
     qnabotcontext = event["req"]["session"].get("qnabotcontext", {})
     amazonq_context = qnabotcontext.get("amazonq_context", {})
-    attachments = get_attachments(event)
 
     # Get the IDC IAM credentials
-    # Parse session JWT token to get the jti
-    token = (event['req']['session']['idtokenjwt'])
+    # idtokenjwt is absent for unauthenticated Lex Web UI sessions.
+    token = event["req"]["session"].get("idtokenjwt")
+    if not token:
+        print("lambda_handler: no idtokenjwt in session")
+        event["res"]["message"] = "This feature requires you to be signed in."
+        event["res"]["got_hits"] = 0
+        return event
     decoded_token = json.loads(base64.b64decode(token.split('.')[1] + '==').decode())
     jti = decoded_token['jti']
 
@@ -229,6 +339,10 @@ def lambda_handler(event, context): # NOSONAR Lambda Handler
             kms_client.encrypt(KeyId=kms_key_id,
                                Plaintext=bytes(json.dumps(creds).encode()))['CiphertextBlob']
         dynamo_table.put_item(Item={'jti': jti, 'ExpiresAt': int(exp), 'Credentials': encrypted_creds})
+
+    # get_attachments() verifies the caller's claimed session_id against
+    # Cognito via cognito-identity:GetId -- see verify_identity_matches_cognito().
+    attachments = get_attachments(event, token, COGNITO_IDENTITY_CLIENT)
 
     # Assume the qbusiness role with the IDC IAM credentials to create the qbusiness client
     assumed_session = boto3.Session(

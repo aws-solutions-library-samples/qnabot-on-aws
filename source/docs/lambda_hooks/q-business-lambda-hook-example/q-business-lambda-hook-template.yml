@@ -152,6 +152,9 @@ Resources:
                 Action:
                   - "s3:GetObject"
                 Resource: "arn:aws:s3:::*/*"
+                Condition:
+                  StringEquals:
+                    "s3:ResourceAccount": !Ref AWS::AccountId
           PolicyName: S3ImportBucketPolicy
         - PolicyDocument:
             Version: 2012-10-17
@@ -194,6 +197,27 @@ Resources:
         - PolicyDocument:
             Version: 2012-10-17
             Statement:
+              # GetId and ListIdentityPools don't support resource-level
+              # restriction (per AWS's IAM Actions/Resources/Condition
+              # Keys reference for Cognito Identity), so "*" is required.
+              - Sid: AllowGetIdAndListPools
+                Effect: Allow
+                Action:
+                  - "cognito-identity:GetId"
+                  - "cognito-identity:ListIdentityPools"
+                Resource: "*"
+              # DescribeIdentityPool supports scoping, but the pool ID
+              # isn't known until discover_identity_pool_id() finds it,
+              # so this is scoped to the account/region instead.
+              - Sid: AllowDescribeAnyPoolInThisAccount
+                Effect: Allow
+                Action:
+                  - "cognito-identity:DescribeIdentityPool"
+                Resource: !Sub "arn:${AWS::Partition}:cognito-identity:${AWS::Region}:${AWS::AccountId}:identitypool/*"
+          PolicyName: CognitoIdentityVerificationPolicy
+        - PolicyDocument:
+            Version: 2012-10-17
+            Statement:
               - Effect: Allow
                 Action: ["ec2:CreateNetworkInterface", "ec2:DescribeNetworkInterfaces", "ec2:DeleteNetworkInterface"]
                 Resource: "*"
@@ -209,7 +233,7 @@ Resources:
     Properties:
       # LambdaHook name must start with 'QNA-' to match QnAbot invoke policy
       FunctionName: !Sub "QNA-LAMBDAHOOK-${AWS::StackName}"
-      Handler: lambdahook.lambda_handler
+      Handler: q_business_lambda_hook.lambda_handler
       Role: !GetAtt "LambdaFunctionRole.Arn"
       Runtime: python3.12
       Timeout: 60

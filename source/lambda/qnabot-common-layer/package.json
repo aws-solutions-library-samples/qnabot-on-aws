@@ -1,6 +1,6 @@
 {
     "name": "qnabot-common-layer",
-    "version": "7.4.5",
+    "version": "7.4.6",
     "description": "Lambda layers used to provide common logging and utility functions",
     "repository": {
         "type": "git",

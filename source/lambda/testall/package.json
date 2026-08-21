@@ -1,6 +1,6 @@
 {
     "name": "testall",
-    "version": "7.4.5",
+    "version": "7.4.6",
     "description": "Lambda function that reads QnAs from opensearch and performs test validation against each question defined in qna against current Lex bot",
     "main": "index.js",
     "scripts": {

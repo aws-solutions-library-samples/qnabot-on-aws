@@ -16964,7 +16964,7 @@ exports.handler = async (event, context) => {
             },
             "DomainEndpointOptions": {
               "EnforceHTTPS": true,
-              "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07",
+              "TLSSecurityPolicy": "Policy-Min-TLS-1-2-PFS-2023-10",
             },
             "EBSOptions": {
               "EBSEnabled": true,
@@ -17037,7 +17037,7 @@ exports.handler = async (event, context) => {
             },
             "DomainEndpointOptions": {
               "EnforceHTTPS": true,
-              "TLSSecurityPolicy": "Policy-Min-TLS-1-2-2019-07",
+              "TLSSecurityPolicy": "Policy-Min-TLS-1-2-PFS-2023-10",
             },
             "EBSOptions": {
               "EBSEnabled": true,
