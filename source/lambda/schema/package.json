@@ -1,6 +1,6 @@
 {
     "name": "schema",
-    "version": "7.4.6",
+    "version": "7.4.7",
     "description": "Lambda function used to provide the schemas for the various qid types",
     "repository": {
         "type": "git",
